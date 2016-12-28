@@ -16,7 +16,7 @@ public class LogInController implements Controller {
     } else { // 회원 등록을 요청할 때
       MemberDao memberDao = (MemberDao)model.get("memberDao"); 
       Member loginInfo = (Member)model.get("loginInfo");
-      
+      System.out.println("Email :"+loginInfo.getEmail());
       Member member = memberDao.exist(
           loginInfo.getEmail(), 
           loginInfo.getPassword());

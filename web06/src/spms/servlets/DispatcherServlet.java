@@ -11,6 +11,8 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import javax.websocket.Session;
 
 import spms.controls.Controller;
 import spms.controls.LogInController;
@@ -59,8 +61,16 @@ public class DispatcherServlet extends HttpServlet {
 				controller = new MemberDeleteController();
 			} else if ("/auth/login.do".equals(servletPath)) {
 				controller = new LogInController();
+				if(request.getParameter("email") != null){
+					model.put("loginInfo", new Member().setEmail(request.getParameter("email"))
+							.setPassword(request.getParameter("password")));
+					HttpSession session = request.getSession();
+					model.put("session", session);
+				}
 			} else if ("/auth/logout.do".equals(servletPath)) {
 				controller = new LogOutController();
+				HttpSession session = request.getSession();
+				model.put("session", session);
 			}
 
 			
@@ -73,6 +83,7 @@ public class DispatcherServlet extends HttpServlet {
 			}
 			if (viewUrl.startsWith("redirect:")) {
 				response.sendRedirect(viewUrl.substring(9));
+				System.out.println("redirect url : "+viewUrl.substring(9));
 				return;
 
 			} else {
