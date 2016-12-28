@@ -12,25 +12,27 @@ import spms.dao.MemberDao;
 
 @WebListener
 public class ContextLoaderListener implements ServletContextListener {
-  @Override
-  public void contextInitialized(ServletContextEvent event) {
-    try {
-      ServletContext sc = event.getServletContext();
-      
-      InitialContext initialContext = new InitialContext();
-      DataSource ds = (DataSource)initialContext.lookup(
-          "java:comp/env/jdbc/studydb");
-      
-      MemberDao memberDao = new MemberDao();
-      memberDao.setDataSource(ds);
-      
-      sc.setAttribute("memberDao", memberDao);
+	@Override
+	public void contextInitialized(ServletContextEvent event) {
+		try {
+			
+			System.out.println("ContextLoaderListener 실행");
+			ServletContext sc = event.getServletContext();
 
-    } catch(Throwable e) {
-      e.printStackTrace();
-    }
-  }
+			InitialContext initialContext = new InitialContext();
+			DataSource ds = (DataSource) initialContext.lookup("java:comp/env/jdbc/studydb");
 
-  @Override
-  public void contextDestroyed(ServletContextEvent event) {}
+			MemberDao memberDao = new MemberDao();
+			memberDao.setDataSource(ds);
+
+			sc.setAttribute("memberDao", memberDao);
+
+		} catch (Throwable e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public void contextDestroyed(ServletContextEvent event) {
+	}
 }
