@@ -3,6 +3,7 @@ package spms.servlets;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
@@ -11,18 +12,10 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import javax.websocket.Session;
 
+import spms.bind.DataBinding;
+import spms.bind.ServletRequestDataBinder;
 import spms.controls.Controller;
-import spms.controls.LogInController;
-import spms.controls.LogOutController;
-import spms.controls.MemberAddController;
-import spms.controls.MemberDeleteController;
-import spms.controls.MemberListController;
-import spms.controls.MemberUpdateController;
-import spms.dao.MemberDao;
-import spms.vo.Member;
 
 @SuppressWarnings("serial")
 @WebServlet("*.do")
@@ -43,42 +36,27 @@ public class DispatcherServlet extends HttpServlet {
 			
 			controller = (Controller) sc.getAttribute(servletPath);
 			
-			if ("/member/list.do".equals(servletPath)) {
-			} else if ("/member/add.do".equals(servletPath)) {
-				//controller = (Controller) sc.getAttribute(servletPath);
-				if (request.getParameter("email") != null) {
-					model.put("member", new Member()
-							.setEmail(request.getParameter("email"))
-							.setPassword(request.getParameter("password"))
-							.setName(request.getParameter("name")));
+			//만약 controller 가 DataBinding interface를 구현했다면
+			if(controller instanceof DataBinding){
+				
+				// pageController.getDataBinders()호출하여 필요한 모델타입을 푼다 
+				Object[] dataBinders = ((DataBinding) controller).getDataBinders();
+				String dataName = null;
+				Class<?> dataType = null;
+				Object dataObj = null;
+				
+				for(Object o : dataBinders){
+					System.out.println(o);
 				}
-			} else if ("/member/update.do".equals(servletPath)) {
-				//controller = new MemberUpdateController();
-				model.put("no", Integer.parseInt(request.getParameter("no")));
-				if (request.getParameter("email") != null) {
-					model.put("member", new Member()
-							.setNo(Integer.parseInt(request.getParameter("no")))
-							.setEmail(request.getParameter("email"))
-							.setName(request.getParameter("name")));
+				
+				for(int i=0 ;i<dataBinders.length;i+=2){
+					dataName = (String)dataBinders[i]; //member
+					dataType = (Class)dataBinders[i+1]; //Member(class)
+					dataObj = ServletRequestDataBinder.bind(request, dataType, dataName);
 				}
-			} else if ("/member/delete.do".equals(servletPath)) {
-				model.put("no", Integer.parseInt(request.getParameter("no")));
-				//controller = new MemberDeleteController();
-			} else if ("/auth/login.do".equals(servletPath)) {
-				//controller = new LogInController();
-				if(request.getParameter("email") != null){
-					model.put("loginInfo", new Member()
-							.setEmail(request.getParameter("email"))
-							.setPassword(request.getParameter("password")));
-					HttpSession session = request.getSession();
-					model.put("session", session);
-				}
-			} else if ("/auth/logout.do".equals(servletPath)) {
-				//controller = new LogOutController();
-				HttpSession session = request.getSession();
-				model.put("session", session);
+				// 모델객체를 자동으로 만들어 주는 메서드를 호출
+				model.put(dataName, dataObj);
 			}
-
 			
 			
 			// 컨트롤러를 호출을 통해  View이름을 리턴받음
@@ -103,5 +81,7 @@ public class DispatcherServlet extends HttpServlet {
 			RequestDispatcher rd = request.getRequestDispatcher("/Error.jsp");
 			rd.forward(request, response);
 		}
+		
+		
 	}
 }

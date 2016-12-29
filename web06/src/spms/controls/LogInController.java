@@ -4,10 +4,11 @@ import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
+import spms.bind.DataBinding;
 import spms.dao.MemberDao;
 import spms.vo.Member;
 
-public class LogInController implements Controller {
+public class LogInController implements Controller, DataBinding {
 	private MemberDao memberDao;
 	
 	public LogInController setMemberDao(MemberDao memberDao) {
@@ -34,5 +35,12 @@ public class LogInController implements Controller {
 				return "/auth/LogInFail.jsp";
 			}
 		}
+	}
+
+	@Override
+	public Object[] getDataBinders() {
+		return new Object[]{
+				"loginInfo",spms.vo.Member.class,"session", HttpSession.class
+			};
 	}
 }
