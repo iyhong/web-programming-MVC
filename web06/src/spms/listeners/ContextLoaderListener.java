@@ -34,7 +34,7 @@ public class ContextLoaderListener implements ServletContextListener {
 			/*
 			 * 1. 공통저장소(sc) : dao -> controller(+dao)
 			 */
-			
+			 
 			//sc.setAttribute("memberDao", memberDao);
 			
 			sc.setAttribute("/member/list.do", new MemberListController().setMemberDao(memberDao));
