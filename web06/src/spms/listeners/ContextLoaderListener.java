@@ -8,8 +8,12 @@ import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
 import javax.sql.DataSource;
 
+import spms.controls.LogInController;
+import spms.controls.LogOutController;
 import spms.controls.MemberAddController;
+import spms.controls.MemberDeleteController;
 import spms.controls.MemberListController;
+import spms.controls.MemberUpdateController;
 import spms.dao.MemberDao;
 
 @WebListener
@@ -34,7 +38,10 @@ public class ContextLoaderListener implements ServletContextListener {
 			
 			sc.setAttribute("/member/list.do", new MemberListController().setMemberDao(memberDao));
 			sc.setAttribute("/member/add.do", new MemberAddController().setMemberDao(memberDao));
-
+			sc.setAttribute("/member/update.do", new MemberUpdateController().setMemberDao(memberDao));
+			sc.setAttribute("/member/delete.do", new MemberDeleteController().setMemberDao(memberDao));
+			sc.setAttribute("/auth/login.do", new LogInController().setMemberDao(memberDao));
+			sc.setAttribute("/auth/logout.do", new LogOutController());
 			
 			
 		} catch (Throwable e) {

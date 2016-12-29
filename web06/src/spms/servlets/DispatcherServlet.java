@@ -42,6 +42,7 @@ public class DispatcherServlet extends HttpServlet {
 			System.out.println("ServletPath:"+request.getServletPath());
 			
 			controller = (Controller) sc.getAttribute(servletPath);
+			
 			if ("/member/list.do".equals(servletPath)) {
 			} else if ("/member/add.do".equals(servletPath)) {
 				//controller = (Controller) sc.getAttribute(servletPath);
@@ -52,7 +53,7 @@ public class DispatcherServlet extends HttpServlet {
 							.setName(request.getParameter("name")));
 				}
 			} else if ("/member/update.do".equals(servletPath)) {
-				controller = new MemberUpdateController();
+				//controller = new MemberUpdateController();
 				model.put("no", Integer.parseInt(request.getParameter("no")));
 				if (request.getParameter("email") != null) {
 					model.put("member", new Member()
@@ -62,9 +63,9 @@ public class DispatcherServlet extends HttpServlet {
 				}
 			} else if ("/member/delete.do".equals(servletPath)) {
 				model.put("no", Integer.parseInt(request.getParameter("no")));
-				controller = new MemberDeleteController();
+				//controller = new MemberDeleteController();
 			} else if ("/auth/login.do".equals(servletPath)) {
-				controller = new LogInController();
+				//controller = new LogInController();
 				if(request.getParameter("email") != null){
 					model.put("loginInfo", new Member()
 							.setEmail(request.getParameter("email"))
@@ -73,7 +74,7 @@ public class DispatcherServlet extends HttpServlet {
 					model.put("session", session);
 				}
 			} else if ("/auth/logout.do".equals(servletPath)) {
-				controller = new LogOutController();
+				//controller = new LogOutController();
 				HttpSession session = request.getSession();
 				model.put("session", session);
 			}
