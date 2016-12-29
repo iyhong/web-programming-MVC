@@ -33,6 +33,7 @@ public class DispatcherServlet extends HttpServlet {
 			ServletContext sc = this.getServletContext();
 			//model.put("memberDao", sc.getAttribute("memberDao"));
 			System.out.println("ServletPath:"+request.getServletPath());
+			model.put("session", request.getSession());
 			
 			controller = (Controller) sc.getAttribute(servletPath);
 			
@@ -53,9 +54,10 @@ public class DispatcherServlet extends HttpServlet {
 					dataName = (String)dataBinders[i]; //member
 					dataType = (Class)dataBinders[i+1]; //Member(class)
 					dataObj = ServletRequestDataBinder.bind(request, dataType, dataName);
+					// 모델객체를 자동으로 만들어 주는 메서드를 호출
+					System.out.println("dataObj : "+dataObj);
+					model.put(dataName, dataObj);
 				}
-				// 모델객체를 자동으로 만들어 주는 메서드를 호출
-				model.put(dataName, dataObj);
 			}
 			
 			
