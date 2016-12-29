@@ -38,23 +38,27 @@ public class DispatcherServlet extends HttpServlet {
 			Controller controller = null;
 			Map<String, Object> model = new HashMap<String, Object>();
 			ServletContext sc = this.getServletContext();
-			model.put("memberDao", sc.getAttribute("memberDao"));
+			//model.put("memberDao", sc.getAttribute("memberDao"));
 			System.out.println("ServletPath:"+request.getServletPath());
 			
+			controller = (Controller) sc.getAttribute(servletPath);
 			if ("/member/list.do".equals(servletPath)) {
-				controller = new MemberListController();
 			} else if ("/member/add.do".equals(servletPath)) {
-				controller = new MemberAddController();
+				//controller = (Controller) sc.getAttribute(servletPath);
 				if (request.getParameter("email") != null) {
-					model.put("member", new Member().setEmail(request.getParameter("email"))
-							.setPassword(request.getParameter("password")).setName(request.getParameter("name")));
+					model.put("member", new Member()
+							.setEmail(request.getParameter("email"))
+							.setPassword(request.getParameter("password"))
+							.setName(request.getParameter("name")));
 				}
 			} else if ("/member/update.do".equals(servletPath)) {
 				controller = new MemberUpdateController();
 				model.put("no", Integer.parseInt(request.getParameter("no")));
 				if (request.getParameter("email") != null) {
-					model.put("member", new Member().setNo(Integer.parseInt(request.getParameter("no")))
-							.setEmail(request.getParameter("email")).setName(request.getParameter("name")));
+					model.put("member", new Member()
+							.setNo(Integer.parseInt(request.getParameter("no")))
+							.setEmail(request.getParameter("email"))
+							.setName(request.getParameter("name")));
 				}
 			} else if ("/member/delete.do".equals(servletPath)) {
 				model.put("no", Integer.parseInt(request.getParameter("no")));
@@ -62,7 +66,8 @@ public class DispatcherServlet extends HttpServlet {
 			} else if ("/auth/login.do".equals(servletPath)) {
 				controller = new LogInController();
 				if(request.getParameter("email") != null){
-					model.put("loginInfo", new Member().setEmail(request.getParameter("email"))
+					model.put("loginInfo", new Member()
+							.setEmail(request.getParameter("email"))
 							.setPassword(request.getParameter("password")));
 					HttpSession session = request.getSession();
 					model.put("session", session);

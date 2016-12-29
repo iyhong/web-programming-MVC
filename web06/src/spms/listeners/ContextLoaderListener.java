@@ -8,6 +8,8 @@ import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
 import javax.sql.DataSource;
 
+import spms.controls.MemberAddController;
+import spms.controls.MemberListController;
 import spms.dao.MemberDao;
 
 @WebListener
@@ -24,9 +26,17 @@ public class ContextLoaderListener implements ServletContextListener {
 
 			MemberDao memberDao = new MemberDao();
 			memberDao.setDataSource(ds);
+			/*
+			 * 1. 공통저장소(sc) : dao -> controller(+dao)
+			 */
+			
+			//sc.setAttribute("memberDao", memberDao);
+			
+			sc.setAttribute("/member/list.do", new MemberListController().setMemberDao(memberDao));
+			sc.setAttribute("/member/add.do", new MemberAddController().setMemberDao(memberDao));
 
-			sc.setAttribute("memberDao", memberDao);
-
+			
+			
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}
