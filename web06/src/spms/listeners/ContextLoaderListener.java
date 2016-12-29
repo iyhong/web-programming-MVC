@@ -15,6 +15,7 @@ import spms.controls.MemberDeleteController;
 import spms.controls.MemberListController;
 import spms.controls.MemberUpdateController;
 import spms.dao.MemberDao;
+import spms.dao.MySqlMemberDao;
 
 @WebListener
 public class ContextLoaderListener implements ServletContextListener {
@@ -28,7 +29,7 @@ public class ContextLoaderListener implements ServletContextListener {
 			InitialContext initialContext = new InitialContext();
 			DataSource ds = (DataSource) initialContext.lookup("java:comp/env/jdbc/studydb");
 
-			MemberDao memberDao = new MemberDao();
+			MemberDao memberDao = new MySqlMemberDao();
 			memberDao.setDataSource(ds);
 			/*
 			 * 1. 공통저장소(sc) : dao -> controller(+dao)
