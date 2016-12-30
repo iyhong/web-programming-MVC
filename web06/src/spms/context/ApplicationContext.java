@@ -4,9 +4,15 @@ import java.io.FileReader;
 import java.lang.reflect.Method;
 import java.util.Hashtable;
 import java.util.Properties;
+import java.util.Set;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
+
+import org.reflections.Reflections;
+
+import spms.annotation.Component;
+
 
 // 프로퍼티 파일을 이용한 객체 준비
 public class ApplicationContext {
@@ -22,11 +28,25 @@ public class ApplicationContext {
     // 1. Properties -> Hashtable
     prepareObjects(props);
     
+    // 2. @Component search -> Hashtable
+    prepareAnnotationObjects();
     
-    // 2. setter 를 통해서 필요한 의존성 주입
+    // 3. setter 를 통해서 필요한 의존성 주입
     injectDependency();
-  }
   
+  }
+  private void prepareAnnotationObjects() throws InstantiationException, IllegalAccessException{
+	 //1. @Component search
+	  Reflections reflector = new Reflections("");	//생성자에 공백이 들어가면 모든 클래스를 검색하겟다임(src). 출발하는 패키지임
+	  Set<Class <?>> list = reflector.getTypesAnnotatedWith(Component.class);
+	 //2. value -> key , 객체 -> value
+	  String key;
+	  for(Class<?> clazz : list){
+		  key = clazz.getAnnotation(Component.class).value();
+		  objTable.put(key, clazz.newInstance()); 
+	  }
+	  
+  }
   private void prepareObjects(Properties props) throws Exception {
     Context ctx = new InitialContext();
     String key = null;
