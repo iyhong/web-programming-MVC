@@ -25,7 +25,7 @@ public class ContextLoaderListener implements ServletContextListener {
 			
 			String propertiesPath = sc.getRealPath(sc.getInitParameter("contextConfigLocation"));
 			//객체관리코드 삭제
-			applicationContext = new ApplicationContext();
+			applicationContext = new ApplicationContext(propertiesPath);
 			
 		} catch (Throwable e) {
 			e.printStackTrace();
