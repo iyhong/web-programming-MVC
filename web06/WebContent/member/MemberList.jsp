@@ -1,3 +1,4 @@
+<%-- 2. 프런트 컨트롤러 적용 - 링크에 .do 붙임 --%>
 <%@ page 
   language="java" 
   contentType="text/html; charset=UTF-8"
@@ -12,7 +13,7 @@
 </head>
 <body>
 <jsp:include page="/Header.jsp"/>
-<h1>회원목록2</h1>
+<h1>회원목록</h1>
 <p><a href='add.do'>신규 회원</a></p>
 <c:forEach var="member" items="${members}"> 
 ${member.no},

@@ -2,8 +2,6 @@ package spms.servlets;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
@@ -17,73 +15,65 @@ import spms.bind.DataBinding;
 import spms.bind.ServletRequestDataBinder;
 import spms.controls.Controller;
 
+// DataBinding 처리
 @SuppressWarnings("serial")
 @WebServlet("*.do")
 public class DispatcherServlet extends HttpServlet {
-	
-	
-	@Override
-	protected void service(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		response.setContentType("text/html; charset=UTF-8");
-		String servletPath = request.getServletPath();
-		try {
-			Controller controller = null;
-			Map<String, Object> model = new HashMap<String, Object>();
-			ServletContext sc = this.getServletContext();
-			//model.put("memberDao", sc.getAttribute("memberDao"));
-			System.out.println("ServletPath:"+request.getServletPath());
-			model.put("session", request.getSession());
-			
-			controller = (Controller) sc.getAttribute(servletPath);
-			
-			//만약 controller 가 DataBinding interface를 구현했다면
-			if(controller instanceof DataBinding){
-				
-				// pageController.getDataBinders()호출하여 필요한 모델타입을 푼다 
-				Object[] dataBinders = ((DataBinding) controller).getDataBinders();
-				String dataName = null;
-				Class<?> dataType = null;
-				Object dataObj = null;
-				
-				for(Object o : dataBinders){
-					System.out.println(o);
-				}
-				
-				for(int i=0 ;i<dataBinders.length;i+=2){
-					dataName = (String)dataBinders[i]; //member
-					dataType = (Class)dataBinders[i+1]; //Member(class)
-					dataObj = ServletRequestDataBinder.bind(request, dataType, dataName);
-					// 모델객체를 자동으로 만들어 주는 메서드를 호출
-					System.out.println("dataObj : "+dataObj);
-					model.put(dataName, dataObj);
-				}
-			}
-			
-			
-			// 컨트롤러를 호출을 통해  View이름을 리턴받음
-			String viewUrl = controller.execute(model);
-			// Map -> request.attribute
-			for(String key : model.keySet()){
-				request.setAttribute(key, model.get(key));
-			}
-			if (viewUrl.startsWith("redirect:")) {
-				response.sendRedirect(viewUrl.substring(9));
-				System.out.println("redirect url : "+viewUrl.substring(9));
-				return;
+  @Override
+  protected void service(
+      HttpServletRequest request, HttpServletResponse response)
+      throws ServletException, IOException {
+    response.setContentType("text/html; charset=UTF-8");
+    String servletPath = request.getServletPath();
+    try {
+      ServletContext sc = this.getServletContext();
+      
+      // 페이지 컨트롤러에게 전달할 Map 객체를 준비한다. 
+      HashMap<String,Object> model = new HashMap<String,Object>();
+      model.put("session", request.getSession());
+      
+      Controller pageController = (Controller) sc.getAttribute(servletPath);
+      
+      if (pageController instanceof DataBinding) {
+        prepareRequestData(request, model, (DataBinding)pageController);
+      }
 
-			} else {
-				RequestDispatcher rd = request.getRequestDispatcher(viewUrl);
-				rd.include(request, response);
-			}
+      // 페이지 컨트롤러를 실행한다.
+      String viewUrl = pageController.execute(model);
+      
+      // Map 객체에 저장된 값을 ServletRequest에 복사한다.
+      for (String key : model.keySet()) {
+        request.setAttribute(key, model.get(key));
+      }
+      
+      if (viewUrl.startsWith("redirect:")) {
+        response.sendRedirect(viewUrl.substring(9));
+        return;
+      } else {
+        RequestDispatcher rd = request.getRequestDispatcher(viewUrl);
+        rd.include(request, response);
+      }
+      
+    } catch (Exception e) {
+      e.printStackTrace();
+      request.setAttribute("error", e);
+      RequestDispatcher rd = request.getRequestDispatcher("/Error.jsp");
+      rd.forward(request, response);
+    }
+  }
 
-		} catch (Exception e) {
-			e.printStackTrace();
-			request.setAttribute("error", e);
-			RequestDispatcher rd = request.getRequestDispatcher("/Error.jsp");
-			rd.forward(request, response);
-		}
-		
-		
-	}
+  private void prepareRequestData(HttpServletRequest request,
+      HashMap<String, Object> model, DataBinding dataBinding)
+      throws Exception {
+    Object[] dataBinders = dataBinding.getDataBinders();
+    String dataName = null;
+    Class<?> dataType = null;
+    Object dataObj = null;
+    for (int i = 0; i < dataBinders.length; i+=2) {
+      dataName = (String)dataBinders[i];
+      dataType = (Class<?>) dataBinders[i+1];
+      dataObj = ServletRequestDataBinder.bind(request, dataType, dataName);
+      model.put(dataName, dataObj);
+    }
+  }
 }
