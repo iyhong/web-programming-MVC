@@ -20,12 +20,15 @@ public class ContextLoaderListener implements ServletContextListener {
 
 	@Override
 	public void contextInitialized(ServletContextEvent event) {
+		System.out.println("리스너 시작");
+		
 		try {
 			ServletContext sc = event.getServletContext();
 			
 			String propertiesPath = sc.getRealPath(sc.getInitParameter("contextConfigLocation"));
 			//객체관리코드 삭제
 			applicationContext = new ApplicationContext(propertiesPath);
+			System.out.println(applicationContext);
 			
 		} catch (Throwable e) {
 			e.printStackTrace();
