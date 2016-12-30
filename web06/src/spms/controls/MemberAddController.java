@@ -2,12 +2,14 @@ package spms.controls;
 
 import java.util.Map;
 
+import spms.annotation.Component;
 import spms.bind.DataBinding;
 import spms.dao.MemberDao;
 import spms.vo.Member;
 
 // Map 객체에 저장할 파라미터에 대한 정보 제공
 // - DataBinding 인터페이스 구현
+@Component(value="/member/add.do")
 public class MemberAddController implements Controller, DataBinding {
   MemberDao memberDao;
   
