@@ -21,7 +21,9 @@ public class ApplicationContext {
   public Object getBean(String key) {
     return objTable.get(key);
   }
-  
+  //ApplicationContext 메서드는 properties에 담겨있는
+  //문자열(요청주소) = 문자열(클래스명) 형태를 받아
+  //Map 에 키(요청주소), 값(객체) 로 담아 리턴시켜줌
   public ApplicationContext(String propertiesPath) throws Exception {
     Properties props = new Properties(); // Properties 는 Map 의 자식 <String, String>
     props.load(new FileReader(propertiesPath));	// FileReader 는 경로를 찾아가 문자열일때 inputStream 을해서 다시 파일로 만들어주고, 그파일을 Properties 에 로드
